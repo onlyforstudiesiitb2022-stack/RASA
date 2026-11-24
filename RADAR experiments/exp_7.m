@@ -1,0 +1,34 @@
+%% Satellite Communication Link Budget Analysis
+clc; clear; close all;
+
+%% Parameters            [Uplink  Downlink]
+f      = [14 12];        % frequency (GHz)
+d      = 36000;          % satellite distance (km)
+Pt     = [20 10];        % transmit power (W)
+Gt     = [45 35];        % transmit antenna gain (dB)
+Gr     = [28 38];        % receive antenna gain (dB)
+N      = -125;           % noise power (dBW)
+CN_req = 10;             % required C/N (dB)
+
+%% Calculations
+Pt_dBW = 10*log10(Pt);                       % transmit power in dBW
+EIRP   = Pt_dBW + Gt;                        % EIRP
+FSL    = 92.45 + 20*log10(f) + 20*log10(d);  % free space path loss
+Pr     = EIRP - FSL + Gr;                    % received power
+CN     = Pr - N;                             % carrier to noise ratio
+margin = CN - CN_req;                        % link margin
+
+%% Display results
+name = {'UPLINK', 'DOWNLINK'};
+fprintf('SATELLITE COMMUNICATION LINK BUDGET ANALYSIS\n');
+fprintf('--------------------------------------------\n');
+for i = 1:2
+    fprintf('\n%s RESULTS\n', name{i});
+    fprintf('Transmitted Power = %.2f dBW\n',    Pt_dBW(i));
+    fprintf('EIRP = %.2f dBW\n',                 EIRP(i));
+    fprintf('Free Space Path Loss = %.2f dB\n',  FSL(i));
+    fprintf('Received Power = %.2f dBW\n',       Pr(i));
+    fprintf('C/N Ratio = %.2f dB\n',             CN(i));
+    fprintf('Link Margin = %.2f dB\n',           margin(i));
+end
+

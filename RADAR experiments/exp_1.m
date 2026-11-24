@@ -1,0 +1,83 @@
+%% Experiment 1: Radar Range Equation
+clc; clear; close all;
+
+%% Parameters
+Pt       = 10e3;
+f        = 10e9;
+Gt_dB    = 30;
+Gr_dB    = 30;
+sigma    = 1;
+L_dB     = 6;
+Pmin_dBm = -100;
+c        = 3e8;
+
+Gt   = 10^(Gt_dB/10);
+Gr   = 10^(Gr_dB/10);
+L    = 10^(L_dB/10);
+Pmin = 10^((Pmin_dBm - 30)/10);
+
+%% Wavelength
+lambda = c / f;
+
+%% Maximum range
+Rmax = ((Pt*Gt*Gr*sigma*lambda^2) / ((4*pi)^3 * L * Pmin))^(1/4);
+fprintf('Maximum Range = %.2f km\n', Rmax/1000);
+
+figure('Name', 'Radar Range Equation', 'Position', [100 100 1100 700]);
+
+%% Received power vs range
+R  = linspace(100, Rmax, 500);
+Pr = (Pt*Gt*Gr*sigma*lambda^2) ./ ((4*pi)^3 .* R.^4 .* L);
+
+subplot(2, 3, 1);
+plot(R/1000, 10*log10(Pr/1e-3), 'b', 'LineWidth', 2);
+grid on;
+xlabel('Range (km)');
+ylabel('Received Power (dBm)');
+title('Received Power vs Range');
+
+%% Transmitted power vs maximum range
+Pt_values = linspace(1e3, 50e3, 500);
+Rmax_Pt = ((Pt_values*Gt*Gr*sigma*lambda^2) ./ ((4*pi)^3 * L * Pmin)).^(1/4);
+
+subplot(2, 3, 2);
+plot(Pt_values, Rmax_Pt, '--r', 'LineWidth', 2);
+grid on;
+xlabel('Transmitted Power (kW)');
+ylabel('Maximum Range (km)');
+title('Transmitted Power vs Maximum Range');
+
+%% Antenna gain vs maximum range
+Gain_dB = linspace(0, 40, 500);
+Gain    = 10.^(Gain_dB/10);
+Rmax_G  = ((Pt .* Gain.^2 .* sigma .* lambda^2) ./ ((4*pi)^3 * L * Pmin)).^(1/4);
+
+subplot(2, 3, 3);
+plot(Gain_dB, Rmax_G, 'b', 'LineWidth', 2);
+grid on;
+xlabel('Antenna Gain (dB)');
+ylabel('Maximum Range (km)');
+title('Antenna Gain vs Maximum Range');
+
+%% Frequency vs maximum range
+f_values      = linspace(1e9, 20e9, 500);
+lambda_values = c ./ f_values;
+Rmax_f = ((Pt*Gt*Gr*sigma .* lambda_values.^2) ./ ((4*pi)^3 * L * Pmin)).^(1/4);
+
+subplot(2, 3, 4);
+plot(f_values, Rmax_f, 'b', 'LineWidth', 2);
+grid on;
+xlabel('Frequency (GHz)');
+ylabel('Maximum Range (km)');
+title('Frequency vs Maximum Range');
+
+%% Radar cross section vs maximum range
+sigma_values = linspace(0.1, 10, 500);
+Rmax_sigma = ((Pt*Gt*Gr .* sigma_values * lambda^2) ./ ((4*pi)^3 * L * Pmin)).^(1/4);
+
+subplot(2, 3, 5);
+plot(sigma_values, Rmax_sigma, 'b', 'LineWidth', 2);
+grid on;
+xlabel('Radar Cross Section (m^2)');
+ylabel('Maximum Range (km)');
+title('Radar Cross Section vs Maximum Range');

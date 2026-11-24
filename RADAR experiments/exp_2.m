@@ -1,0 +1,38 @@
+clc;
+clear;
+close all;
+
+N = 1e4;
+SNR = [-10 0 10 20];
+th = linspace(-10,12,300);
+for k = 1:4
+    sg = sqrt(10^(-SNR(k)/10));       % noise std (signal amplitude = 1)
+    n0 = sg*randn(N,1);               % H0: noise only
+    n1 = 1 + sg*randn(N,1);           % H1: pulse + noise
+    Pfa = mean(n0 > th);              % false alarm prob. vs threshold
+    Pd  = mean(n1 > th);              % detection prob. vs threshold
+    subplot(2,2,1); plot(Pfa,Pd,'LineWidth',1.5); hold on;
+    subplot(2,2,2); plot(th,Pd,'LineWidth',1.5);  hold on;
+    subplot(2,2,3); plot(th,Pfa,'LineWidth',1.5); hold on;
+end
+L = compose('%d dB',SNR);
+subplot(2,2,1);
+title('ROC: Pd vs Pfa'); 
+xlabel('Pfa');
+ylabel('Pd');
+grid on; 
+legend(L,'Location','southeast');
+
+subplot(2,2,2); 
+title('Pd vs Threshold');
+xlabel('Threshold');
+ylabel('Pd');
+grid on;
+legend(L);
+
+subplot(2,2,3);
+title('Pfa vs Threshold');
+xlabel('Threshold');
+ylabel('Pfa');
+grid on;
+legend(L);
